@@ -178,6 +178,7 @@ class NS_Post_Finder {
 	 * @param array $options Field options
 	 */
 	public static function render( $name, $value, $options = array() ) {
+		$posts = array();
 
 		$options = wp_parse_args( $options, array(
 			'show_numbers'   => true, // display # next to post
@@ -213,7 +214,7 @@ class NS_Post_Finder {
 		}
 
 		// get current selected posts if we have a value
-		if( !empty( $value ) && is_string( $value ) ) {
+		if( is_string( $value ) ) {
 
 			$post_ids = array_map( 'intval', explode( ',', $value ) );
 
@@ -247,7 +248,7 @@ class NS_Post_Finder {
 			<ul class="list">
 				<?php
 
-				if( !empty( $posts ) ) {
+				if( isset( $posts ) && !empty( $posts ) ) {
 					$i = 1;
 					foreach( $posts as $post ) {
 						printf(
