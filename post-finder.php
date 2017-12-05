@@ -191,6 +191,7 @@ class NS_Post_Finder {
 	 * @param array $options Field options
 	 */
 	public static function render( $name, $value, $options = array() ) {
+		$posts = [];
 
 		$options = wp_parse_args( $options, array(
 			'show_numbers'            => true, // display numbers next to post
