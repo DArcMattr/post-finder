@@ -20,21 +20,23 @@
 
 		defaults = {
 			template:                mainTemplate,
+			resultsSelector:         '.results',
 			fieldSelector:           'input[type=hidden]',
+			typesfieldSelector:      'input#types[type=hidden]',
 			selectSelector:          'select',
 			listSelector:            '.list',
+			searchSelector:          '.search',
+			resultsSelector:         '.results',
+			querySelector:           'input[type=text]',
+			nonceSelector:           '#post_finder_nonce'
 			counterSelector:         '.counter',
 			searchContainerSelector: '.search-container',
-			searchSelector:          '.search',
 			searchButtonSelector:    '.button',
 			resetSelector:           '.reset',
 			statusSelector:          '.status',
 			cancelSelector:          '.cancel',
 			statusLabelSelector:     '.status-label',
 			spinnerSelector:         '.spinner',
-			resultsSelector:         '.results',
-			querySelector:           'input[type=text]',
-			nonceSelector:           '#post_finder_nonce'
 		};
 
 		var plugin = this;
@@ -50,21 +52,22 @@
 			plugin.settings = $.extend( {}, defaults, options );
 
 			// all jquery objects are fetched once and stored in the plugin object
-			plugin.$field           = $element.find( plugin.settings.fieldSelector ),
-			plugin.$list            = $element.find( plugin.settings.listSelector ),
-			plugin.$counter         = $element.find( plugin.settings.counterSelector ),
+			plugin.$field           = $element.find( plugin.settings.fieldSelector),
+			plugin.$list            = $element.find( plugin.settings.listSelector),
 			plugin.$select          = $element.find( plugin.settings.selectSelector ),
+			plugin.$search          = $element.find( plugin.settings.searchSelector),
+			plugin.$query           = plugin.$search.find(plugin.settings.querySelector),
+			plugin.nonce            = $( plugin.settings.nonceSelector ).val();
+			plugin.$results         = plugin.$search.find( plugin.settings.resultsSelector ),
+			plugin.$counter         = $element.find( plugin.settings.counterSelector ),
 			plugin.$searchContainer = $element.find( plugin.settings.searchContainerSelector ),
-			plugin.$search          = $element.find( plugin.settings.searchSelector ),
 			plugin.$searchButton    = plugin.$search.find( plugin.settings.searchButtonSelector ),
 			plugin.$reset           = plugin.$search.find( plugin.settings.resetSelector ),
 			plugin.$status          = plugin.$search.find( plugin.settings.statusSelector ),
 			plugin.$statusLabel     = plugin.$search.find( plugin.settings.statusLabelSelector ),
 			plugin.$cancel          = plugin.$search.find( plugin.settings.cancelSelector ),
 			plugin.$spinner         = plugin.$search.find( plugin.settings.spinnerSelector ),
-			plugin.$results         = plugin.$search.find( plugin.settings.resultsSelector ),
-			plugin.$query           = plugin.$search.find( plugin.settings.querySelector ),
-			plugin.nonce            = $( plugin.settings.nonceSelector ).val();
+			plugin.$typefield       = $element.find(plugin.settings.typesfieldSelector),
 
 			// bind select
 			plugin.$select.on( 'change', function( e ){
@@ -300,8 +303,9 @@
 		};
 
 		plugin.serialize = function() {
-
-			var ids = [], i = 1;
+			var ids = [],
+				types = [],
+				i = 1;
 
 			plugin.$list.find( 'li' ).each( function(){
 				$( this ).find( 'input' ).val( i );
@@ -310,6 +314,12 @@
 			});
 
 			plugin.$field.val( ids.join( ',' ) );
+			plugin.$typefield.val( types.join(',') );
+
+			$( document ).trigger( 'updatePostfinder', {
+				'idField': plugin.$field,
+				'typeField': plugin.$typefield
+			} );
 		}
 
 		plugin.limitReached = function() {
